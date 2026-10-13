@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Public Service Advisory — Live Slideshow</title>
+<style>
+  :root{--bg:#072033}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
+  body{
+    user-select:none;
+    -webkit-user-select:none;
+    -ms-user-select:none;
+    -webkit-touch-callout:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  /* Gooey animated gradient bubbles - environmental theme */
+  :root {
+    --color-bg1: rgb(6, 28, 48);
+    --color-bg2: rgb(8, 42, 70);
+    --color1: 34, 211, 238;
+    --color2: 52, 211, 153;
+    --color3: 96, 165, 250;
+    --color4: 56, 189, 248;
+    --color5: 45, 212, 191;
+    --color-interactive: 59, 130, 246;
+    --circle-size: 80%;
+    --blending: screen;
+  }
+
+  @keyframes moveInCircle {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes moveVertical {
+    0% { transform: translateY(-50%); }
+    50% { transform: translateY(50%); }
+    100% { transform: translateY(-50%); }
+  }
+
+  @keyframes moveHorizontal {
+    0% { transform: translateX(-50%) translateY(-10%); }
+    50% { transform: translateX(50%) translateY(10%); }
+    100% { transform: translateX(-50%) translateY(-10%); }
+  }
+
+  .gradient-bg {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    background: radial-gradient(1200px 800px at 50% 0%, #0f3d66 0%, transparent 60%),
+                radial-gradient(1000px 700px at 0% 100%, #0b4f3f 0%, transparent 55%),
+                radial-gradient(900px 600px at 100% 100%, #123a6b 0%, transparent 50%),
+                linear-gradient(180deg, #061a2b 0%, #040f1a 100%);
+  }
+
+  .gradient-bg svg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .gradient-bg .gradients-container {
+    filter: url(#goo) blur(40px);
+    width: 100%;
+    height: 100%;
+  }
+
+  .gradient-bg .g1 {
+    position: absolute;
+    background: radial-gradient(circle at center, rgba(var(--color1), 0.8) 0, rgba(var(--color1), 0) 50%) no-repeat;
+    mix-blend-mode: var(--blending);
+    width: var(--circle-size);
+    height: var(--circle-size);
+    top: calc(50% - var(--circle-size) / 2);
+    left: calc(50% - var(--circle-size) / 2);
+    transform-origin: center center;
+    animation: moveVertical 35s ease infinite;
+    opacity: 0.9;
+  }
+
+  .gradient-bg .g2 {
+    position: absolute;
+    background: radial-gradient(circle at center, rgba(var(--color2), 0.8) 0, rgba(var(--color2), 0) 50%) no-repeat;
+    mix-blend-mode: var(--blending);
+    width: var(--circle-size);
+    height: var(--circle-size);
+    top: calc(50% - var(--circle-size) / 2);
+    left: calc(50% - var(--circle-size) / 2);
+    transform-origin: calc(50% - 400px);
+    animation: moveInCircle 25s reverse infinite;
+    opacity: 0.85;
+  }
+
+  .gradient-bg .g3 {
+    position: absolute;
+    background: radial-gradient(circle at center, rgba(var(--color3), 0.8) 0, rgba(var(--color3), 0) 50%) no-repeat;
+    mix-blend-mode: var(--blending);
+    width: var(--circle-size);
+    height: var(--circle-size);
+    top: calc(50% - var(--circle-size) / 2 + 200px);
+    left: calc(50% - var(--circle-size) / 2 - 500px);
+    transform-origin: calc(50% + 400px);
+    animation: moveInCircle 45s linear infinite;
+    opacity: 0.9;
+  }
+
+  .gradient-bg .g4 {
+    position: absolute;
+    background: radial-gradient(circle at center, rgba(var(--color4), 0.8) 0, rgba(var(--color4), 0) 50%) no-repeat;
+    mix-blend-mode: var(--blending);
+    width: var(--circle-size);
+    height: var(--circle-size);
+    top: calc(50% - var(--circle-size) / 2);
+    left: calc(50% - var(--circle-size) / 2);
+    transform-origin: calc(50% - 200px);
+    animation: moveHorizontal 45s ease infinite;
+    opacity: 0.8;
+  }
+
+  .gradient-bg .g5 {
+    position: absolute;
+    background: radial-gradient(circle at center, rgba(var(--color5), 0.8) 0, rgba(var(--color5), 0) 50%) no-repeat;
+    mix-blend-mode: var(--blending);
+    width: calc(var(--circle-size) * 1.8);
+    height: calc(var(--circle-size) * 1.8);
+    top: calc(50% - var(--circle-size) * 0.9);
+    left: calc(50% - var(--circle-size) * 0.9);
+    transform-origin: calc(50% - 800px) calc(50% + 200px);
+    animation: moveInCircle 30s ease infinite;
+    opacity: 0.9;
+  }
+
+  .gradient-bg .interactive {
+    position: absolute;
+    background: radial-gradient(circle at center, rgba(var(--color-interactive), 0.7) 0, rgba(var(--color-interactive), 0) 50%) no-repeat;
+    mix-blend-mode: var(--blending);
+    width: 100%;
+    height: 100%;
+    top: -50%;
+    left: -50%;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gradient-bg .g1,
+    .gradient-bg .g2,
+    .gradient-bg .g3,
+    .gradient-bg .g4,
+    .gradient-bg .g5,
+    .gradient-bg .interactive {
+      animation: none;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bg::after,.blob,.particles{animation:none}
+  }
+  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1}
+  .frame{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:14px;z-index:2}
+  .advisory-canvas{
+    max-width:100%;
+    max-height:100%;
+    width:auto;
+    height:auto;
+    border-radius:8px;
+    box-shadow:0 12px 40px #00000066;
+    opacity:1;
+    transition:opacity .35s ease;
+    pointer-events:none;
+    user-select:none;
+    -webkit-user-select:none;
+    -webkit-user-drag:none;
+  }
+  /* Protective overlay: sits above the canvas and swallows save/drag/long-press actions. */
+  .shield{position:fixed;inset:0;z-index:4;background:transparent;cursor:default}
+  .nav-arrow{
+    position:fixed;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:5;
+    width:58px;
+    height:58px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:0;
+    border-radius:50%;
+    background:rgba(255,255,255,0.14);
+    backdrop-filter:blur(10px) saturate(140%);
+    -webkit-backdrop-filter:blur(10px) saturate(140%);
+    border:1px solid rgba(255,255,255,0.22);
+    color:#fff;
+    cursor:pointer;
+    transition:background .2s ease,transform .2s ease,box-shadow .2s ease;
+    -webkit-tap-highlight-color:transparent;
+    box-shadow:0 8px 30px rgba(15,23,42,0.45);
+  }
+  .nav-arrow:hover{background:rgba(255,255,255,0.28);box-shadow:0 10px 40px rgba(15,23,42,0.5)}
+  .nav-arrow:active{transform:translateY(-50%) scale(.94)}
+  .nav-arrow:focus-visible{outline:3px solid rgba(77,184,255,0.8);outline-offset:2px}
+  .nav-arrow svg{width:30px;height:30px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .nav-arrow.left{left:18px}
+  .nav-arrow.right{right:18px}
+  @media(max-width:620px){.nav-arrow{width:46px;height:46px}.nav-arrow svg{width:24px;height:24px}}
+  /* Never expose the advisory to the browser print/PDF pipeline. */
+  @media print{html,body{display:none!important}}
+</style>
+</head>
+<body>
+  <div class="gradient-bg" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="goo">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" />
+          <feBlend in="SourceGraphic" in2="goo" />
+        </filter>
+      </defs>
+    </svg>
+    <div class="gradients-container">
+      <div class="g1"></div>
+      <div class="g2"></div>
+      <div class="g3"></div>
+      <div class="g4"></div>
+      <div class="g5"></div>
+      <div class="interactive"></div>
+    </div>
+  </div>
+  <main class="stage">
+    <button class="nav-arrow left" id="prev" type="button" aria-label="Previous advisory">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="frame"><canvas class="advisory-canvas" id="advisory-canvas" width="1080" height="1350" aria-label="Public Service Advisory"></canvas></div>
+    <button class="nav-arrow right" id="next" type="button" aria-label="Next advisory">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <div class="shield" id="shield" aria-hidden="true"></div>
+  </main>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ------------------------------------------------------------------ *
+   *  CONTENT PROTECTION — block saving / downloading the advisory        *
+   * ------------------------------------------------------------------ */
+  // Block right-click / context menu (Save image as, Inspect, etc.)
+  document.addEventListener("contextmenu", event => event.preventDefault());
+  // Block dragging the advisory out of the page.
+  document.addEventListener("dragstart", event => event.preventDefault());
+  document.addEventListener("drop", event => event.preventDefault());
+  // Block selecting or copying the advisory.
+  document.addEventListener("selectstart", event => event.preventDefault());
+  document.addEventListener("copy", event => event.preventDefault());
+  document.addEventListener("cut", event => event.preventDefault());
+
+  // Block common save / print / view-source / devtools shortcuts.
+  document.addEventListener("keydown", event => {
+    const key = (event.key || "").toLowerCase();
+    const blockedCombo = (event.ctrlKey || event.metaKey) && ["s", "p", "u"].includes(key);
+    const devtoolsCombo = (event.ctrlKey || event.metaKey) && event.shiftKey && ["i", "j", "c"].includes(key);
+    if (blockedCombo || devtoolsCombo || key === "f12") {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    }
+    // Arrow-key navigation still allowed below.
+  }, true);
+
+  // Deter PrintScreen capture by clearing the clipboard afterwards (best effort).
+  document.addEventListener("keyup", event => {
+    if (event.key === "PrintScreen" || event.keyCode === 44) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText("").catch(() => {});
+      } catch { /* clipboard not available */ }
+    }
+  });
+
+  // Reinforce on the shield layer.
+  const shield = document.getElementById("shield");
+  shield.addEventListener("contextmenu", event => event.preventDefault());
+  shield.addEventListener("dragstart", event => event.preventDefault());
+  shield.addEventListener("mousedown", event => { if (event.button !== 0) event.preventDefault(); });
+
+  /* ------------------------------------------------------------------ *
+   *  LIVE DATA SOURCE (same Google Sheets source as the AQMS app)        *
+   * ------------------------------------------------------------------ */
+  const SPREADSHEET_ID = "1Fh6w15beHCAHPGJw-2nfwNryez3vwnSVCd8bsFGKvHE";
+  const spreadsheetBase = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
+  const continuousSheets = [["talisay", "Talisay City"], ["toledo", "City of Toledo"]];
+  const DATA_REFRESH_INTERVAL = 5000;   // reload live readings every 5s
+  const SLIDESHOW_INTERVAL = 5000;      // change the displayed advisory every 5s
+
+  // The four live advisories: Talisay + Toledo, each PM2.5 and PM10.
+  const ADVISORIES = [
+    {id: "talisay-pm25", station: "Talisay Station", parameter: "pm25"},
+    {id: "talisay-pm10", station: "Talisay Station", parameter: "pm10"},
+    {id: "toledo-pm25", station: "Toledo Station", parameter: "pm25"},
+    {id: "toledo-pm10", station: "Toledo Station", parameter: "pm10"}
+  ];
+
+  const aqiCategories = [
+    {name: "GOOD", range: "1–50", min: 1, max: 50, color: "#2dcc8a"},
+    {name: "FAIR", range: "51–100", min: 51, max: 100, color: "#f5d447"},
+    {name: "UNHEALTHY FOR SENSITIVE GROUPS", range: "101–150", min: 101, max: 150, color: "#ff963e"},
+    {name: "VERY UNHEALTHY", range: "151–200", min: 151, max: 200, color: "#f14b52"},
+    {name: "ACUTELY UNHEALTHY", range: "201–300", min: 201, max: 300, color: "#AE28C5"},
+    {name: "EMERGENCY", range: "301–500", min: 301, max: 500, color: "#6b3434"}
+  ];
+
+  const dataText = value => String(value ?? "").trim();
+  const formatPollutant = key => key === "pm25" ? "PM2.5" : "PM10";
+
+  function parseCsv(csv) {
+    const rows = [];
+    let row = [], field = "", quoted = false;
+    for (let index = 0; index < csv.length; index += 1) {
+      const character = csv[index];
+      if (character === '"') {
+        if (quoted && csv[index + 1] === '"') { field += '"'; index += 1; }
+        else { quoted = !quoted; }
+      } else if (character === "," && !quoted) {
+        row.push(field.trim()); field = "";
+      } else if ((character === "\n" || character === "\r") && !quoted) {
+        if (character === "\r" && csv[index + 1] === "\n") index += 1;
+        row.push(field.trim());
+        if (row.some(value => value)) rows.push(row);
+        row = []; field = "";
+      } else { field += character; }
+    }
+    if (field || row.length) { row.push(field.trim()); if (row.some(value => value)) rows.push(row); }
+    return rows;
+  }
+
+  function normalizeRecords(csv) {
+    const rows = parseCsv(csv);
+    if (rows.length < 2) throw new Error("no data");
+    const headers = rows[0].map(header => header.toLowerCase().replace(/[^a-z0-9]/g, ""));
+    const column = name => headers.indexOf(name);
+    const stationColumn = column("station");
+    const cityColumn = column("city");
+    const dateColumn = headers.indexOf("samplingdate") >= 0 ? column("samplingdate") : column("sampingdate");
+    const hourColumn = column("hour");
+    const pm25Column = column("pm25");
+    const pm10Column = column("pm10");
+    const remarks25Column = headers.indexOf("remarks25") >= 0 ? column("remarks25") : column("remakrs25");
+    const remarks10Column = headers.indexOf("remarkspm10") >= 0 ? column("remarkspm10") : column("remarks10");
+    if ([stationColumn, cityColumn, dateColumn, hourColumn, pm25Column, pm10Column].some(value => value < 0)) throw new Error("missing columns");
+    return rows.slice(1).map((row, rowIndex) => {
+      const date = new Date(`${row[dateColumn]} ${row[hourColumn]}`);
+      const validDate = !Number.isNaN(date.getTime());
+      const pm25Text = row[pm25Column].trim();
+      const pm10Text = row[pm10Column].trim();
+      return {
+        sourceOrder: rowIndex,
+        station: row[stationColumn],
+        city: row[cityColumn],
+        dateText: row[dateColumn].trim(),
+        timeText: row[hourColumn].trim(),
+        timestamp: validDate ? date.toISOString() : "",
+        pm25: pm25Text === "" ? NaN : Number(pm25Text),
+        pm10: pm10Text === "" ? NaN : Number(pm10Text),
+        remarks25: remarks25Column >= 0 ? row[remarks25Column].trim() : "",
+        remarks10: remarks10Column >= 0 ? row[remarks10Column].trim() : ""
+      };
+    }).filter(item => Number.isFinite(item.pm25) || Number.isFinite(item.pm10) || item.remarks25 || item.remarks10);
+  }
+
+  function categoryForValue(value) {
+    if (!Number.isFinite(value) || value < 1) return null;
+    return aqiCategories.find(category => value >= category.min && value <= category.max)
+      || (value > 500 ? {name: "Above Emergency", range: ">500", color: "#4a2323"} : null);
+  }
+  function normalizeAqiRemark(remark) {
+    const normalized = dataText(remark).toLowerCase().replace(/\s+/g, " ");
+    if (!normalized) return "";
+    if (normalized.includes("emergency")) return "EMERGENCY";
+    if (normalized.includes("acutely unhealthy")) return "ACUTELY UNHEALTHY";
+    if (normalized.includes("unhealthy for sensitive group") || (normalized.includes("unhealty") && normalized.includes("sensitive"))) return "UNHEALTHY FOR SENSITIVE GROUPS";
+    if (normalized.includes("very unhealthy")) return "VERY UNHEALTHY";
+    if (normalized.includes("unhealty")) return "VERY UNHEALTHY";
+    if (normalized.includes("unhealthy")) return "VERY UNHEALTHY";
+    if (normalized.includes("moderate") || normalized.includes("fair")) return "FAIR";
+    if (normalized.includes("good")) return "GOOD";
+    return dataText(remark);
+  }
+  function getStationDisplayTitle(stationName) {
+    switch (dataText(stationName)) {
+      case "Talisay Station": return "METRO CEBU AMBIENT AIR QUALITY MONITORING STATION";
+      case "Toledo Station": return "CAAMS BRGY. CABITOONAN, TOLEDO CITY, STATION";
+      default: return dataText(stationName).toUpperCase();
+    }
+  }
+  const getParameterTitle = parameter => dataText(parameter).toLowerCase() === "pm25" ? "PM2.5" : dataText(parameter).toUpperCase();
+
+  /* ------------------------------------------------------------------ *
+   *  DATA + SELECTION                                                    *
+   * ------------------------------------------------------------------ */
+  let liveRecords = {};
+  let isRefreshing = false;
+
+  const advisoryRecords = () => Object.values(liveRecords).flat().filter(item => item && item.station && item.timestamp);
+
+  async function fetchSheet(sheetName) {
+    const response = await fetch(`${spreadsheetBase}${encodeURIComponent(sheetName)}&t=${Date.now()}`, {cache: "no-store"});
+    if (!response.ok) throw new Error("load failed");
+    return normalizeRecords(await response.text());
+  }
+
+  async function refreshLiveData() {
+    if (isRefreshing) return;
+    isRefreshing = true;
+    try {
+      const fetched = await Promise.all(continuousSheets.map(([key, sheet]) => fetchSheet(sheet).then(records => [key, records])));
+      liveRecords = Object.fromEntries(fetched);
+      await renderAll();
+    } catch (error) {
+      console.warn("[Advisory slideshow] data source error:", error.message);
+    } finally {
+      isRefreshing = false;
+    }
+  }
+
+  // Pick a window that contains data, preferring the most recent 24 hours.
+  function selectPoints(station, parameter) {
+    const records = advisoryRecords()
+      .filter(item => item.station === station && Number.isFinite(item[parameter]) && item[parameter] >= 1)
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp) || a.sourceOrder - b.sourceOrder);
+    if (!records.length) return {points: [], latest: null};
+    const latest = records.at(-1);
+    const latestMs = new Date(latest.timestamp).getTime();
+    for (const hours of [24, 72, 168, 720]) {
+      const points = records.filter(item => new Date(item.timestamp).getTime() >= latestMs - hours * 3600000);
+      if (points.length >= 2) return {points, latest};
+    }
+    return {points: records.slice(-30), latest};
+  }
+
+  const formatFilterDate = value => new Date(value).toLocaleDateString([], {year: "numeric", month: "long", day: "numeric"}).toUpperCase();
+  function filterLabel(points) {
+    const latest = points.at(-1);
+    if (!latest) return "DATE UNAVAILABLE";
+    const first = points[0];
+    const span = new Date(latest.timestamp).getTime() - new Date(first.timestamp).getTime();
+    if (span <= 24 * 60 * 60 * 1000) {
+      const latestDate = new Date(latest.timestamp);
+      const time = latest.timeText ? latestDate.toLocaleTimeString([], {hour: "numeric", minute: "2-digit"}).toUpperCase() : "TIME UNAVAILABLE";
+      return `AS OF ${formatFilterDate(latestDate)} | ${time}`;
+    }
+    return `${formatFilterDate(first.timestamp)} - ${formatFilterDate(latest.timestamp)}`;
+  }
+  function graphMaximum(points, parameter) {
+    const max = Math.max(...points.map(item => Number(item[parameter])).filter(Number.isFinite));
+    const rounded = Math.ceil(max / 50) * 50;
+    return Math.min(500, Math.max(100, Number.isFinite(rounded) ? rounded : 100));
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  POSTER RENDERING (1080 x 1350) — drawn straight onto the canvas     *
+   * ------------------------------------------------------------------ */
+  const advisoryText = (context, text, x, y, maxWidth, lineHeight) => {
+    const words = String(text || "").split(/\s+/);
+    let line = "", currentY = y;
+    words.forEach(word => {
+      const test = line ? `${line} ${word}` : word;
+      if (context.measureText(test).width > maxWidth && line) { context.fillText(line, x, currentY); line = word; currentY += lineHeight; }
+      else line = test;
+    });
+    if (line) context.fillText(line, x, currentY);
+    return currentY;
+  };
+  const previewCategoryColors = {GOOD: "#8FE610", FAIR: "#FBFF37", "UNHEALTHY FOR SENSITIVE GROUPS": "#F9A72B", "VERY UNHEALTHY": "#AC0B09", "ACUTELY UNHEALTHY": "#AE28C5", EMERGENCY: "#7A2F00"};
+  const previewCategoryColor = category => previewCategoryColors[category?.name] || category?.color || "#60778b";
+  const previewCategoryFontColor = category => category?.name === "FAIR" ? "#1E293B" : "#FFFFFF";
+
+  const assets = (() => {
+    const load = source => new Promise(resolve => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => resolve(null);
+      image.src = source;
+    });
+    return {
+      background: load("New Background.png"),
+      denrLogo: load("DENR LOGO.png"),
+      bagongLogo: load("New Bagong Pilipinas.png")
+    };
+  })();
+
+  function drawPosterInto(canvas, points, latest, parameter, category, label, station, graphMax, images) {
+    const context = canvas.getContext("2d");
+    canvas.width = 1080; canvas.height = 1350;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    const background = images.background, denrLogo = images.denrLogo, bagongLogo = images.bagongLogo;
+    if (background?.naturalWidth) {
+      const scale = Math.min(canvas.width / background.naturalWidth, canvas.height / background.naturalHeight);
+      const width = background.naturalWidth * scale, height = background.naturalHeight * scale;
+      context.drawImage(background, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+    } else {
+      context.fillStyle = "#164b70"; context.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    const drawContain = (image, x, y, width, height) => {
+      if (!image?.naturalWidth) return;
+      const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
+      const drawWidth = image.naturalWidth * scale, drawHeight = image.naturalHeight * scale;
+      context.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight);
+    };
+    const logoSize = 118, logoGap = 10;
+    const logoGroupWidth = logoSize * 2 + logoGap;
+    const logoY = 16, logoX = (canvas.width - logoGroupWidth) / 2;
+    drawContain(denrLogo, logoX, logoY, logoSize, logoSize);
+    drawContain(bagongLogo, logoX + logoSize + logoGap, logoY, logoSize, logoSize);
+    context.textAlign = "center";
+    context.fillStyle = "#FFD400";
+    context.font = "900 58px Segoe UI, Arial";
+    context.shadowColor = "rgba(0,0,0,.35)"; context.shadowBlur = 8; context.shadowOffsetY = 4;
+    context.fillText("PUBLIC SERVICE ADVISORY", 540, 188);
+    context.shadowColor = "transparent"; context.shadowBlur = 0; context.shadowOffsetY = 0;
+    context.fillStyle = "#fff";
+    context.font = "800 36px Segoe UI, Arial";
+    context.fillText("AIR QUALITY MONITORING", 540, 237);
+    context.fillStyle = "#fff"; context.fillRect(0, 260, 1080, 68);
+    context.fillStyle = "#10346b";
+    context.font = "900 27px Segoe UI, Arial";
+    context.fillText(label, 540, 303);
+    context.fillStyle = "rgba(10,39,76,.86)"; context.fillRect(0, 328, 1080, 70);
+    context.fillStyle = "#fff";
+    context.font = "900 34px Segoe UI, Arial";
+    context.fillText("📍 CENTRAL VISAYAS", 540, 373);
+    context.fillStyle = "#fff"; context.fillRect(70, 418, 940, 310);
+    context.fillStyle = "#17324d";
+    context.font = "900 28px Segoe UI, Arial";
+    const stationTitle = getStationDisplayTitle(station);
+    const parameterTitle = getParameterTitle(parameter);
+    advisoryText(context, stationTitle, 540, 472, 860, 36);
+    context.font = "700 19px Segoe UI, Arial";
+    context.fillText("(REAL-TIME PARTICULATE MATTER STATION)", 540, 541);
+    const tableLeft = 104, tableTop = 578, tableWidth = 872, headerHeight = 52, dataHeight = 80;
+    const colWidths = [244, 192, 436];
+    const drawCenteredCellText = (text, x, y, width, height, font, color) => {
+      context.save();
+      context.font = font; context.fillStyle = color; context.textAlign = "center"; context.textBaseline = "middle";
+      context.beginPath(); context.rect(x + 2, y + 2, width - 4, height - 4); context.clip();
+      const words = String(text || "").split(/\s+/);
+      const lines = []; let line = "";
+      words.forEach(word => {
+        const candidate = line ? `${line} ${word}` : word;
+        if (line && context.measureText(candidate).width > width - 24) { lines.push(line); line = word; }
+        else line = candidate;
+      });
+      if (line) lines.push(line);
+      const lineHeight = Math.max(22, parseInt(font.match(/\d+/)?.[0] || "18", 10) + 5);
+      const startY = y + height / 2 - ((lines.length - 1) * lineHeight) / 2;
+      lines.forEach((entry, index) => context.fillText(entry, x + width / 2, startY + index * lineHeight));
+      context.restore();
+    };
+    context.fillStyle = "#8A8A8A"; context.fillRect(tableLeft, tableTop, tableWidth, headerHeight);
+    context.fillStyle = previewCategoryColor(category); context.fillRect(tableLeft, tableTop + headerHeight, tableWidth, dataHeight);
+    context.strokeStyle = "#fff"; context.lineWidth = 2;
+    context.strokeRect(tableLeft, tableTop, tableWidth, headerHeight + dataHeight);
+    context.beginPath();
+    context.moveTo(tableLeft + colWidths[0], tableTop); context.lineTo(tableLeft + colWidths[0], tableTop + headerHeight + dataHeight);
+    context.moveTo(tableLeft + colWidths[0] + colWidths[1], tableTop); context.lineTo(tableLeft + colWidths[0] + colWidths[1], tableTop + headerHeight + dataHeight);
+    context.moveTo(tableLeft, tableTop + headerHeight); context.lineTo(tableLeft + tableWidth, tableTop + headerHeight);
+    context.stroke();
+    ["PARAMETER", "AQI VALUE", "REMARKS"].forEach((cellLabel, index) => {
+      const x = tableLeft + colWidths.slice(0, index).reduce((sum, width) => sum + width, 0);
+      drawCenteredCellText(cellLabel, x, tableTop, colWidths[index], headerHeight, "900 17px Segoe UI, Arial", "#fff");
+    });
+    const remark = normalizeAqiRemark(latest[parameter === "pm25" ? "remarks25" : "remarks10"]) || category?.name || "NO CATEGORY";
+    const dataColor = previewCategoryFontColor(category);
+    drawCenteredCellText(formatPollutant(parameter), tableLeft, tableTop + headerHeight, colWidths[0], dataHeight, "700 25px Segoe UI, Arial", dataColor);
+    drawCenteredCellText(String(latest[parameter]), tableLeft + colWidths[0], tableTop + headerHeight, colWidths[1], dataHeight, "700 25px Segoe UI, Arial", dataColor);
+    const remarkCellX = tableLeft + colWidths[0] + colWidths[1];
+    const remarkLines = remark.toUpperCase() === "UNHEALTHY FOR SENSITIVE GROUPS" ? ["UNHEALTHY FOR", "SENSITIVE GROUPS"] : [remark.toUpperCase()];
+    context.save();
+    context.beginPath(); context.rect(remarkCellX + 2, tableTop + headerHeight + 2, colWidths[2] - 4, dataHeight - 4); context.clip();
+    context.font = "700 25px Segoe UI, Arial"; context.fillStyle = dataColor; context.textAlign = "center"; context.textBaseline = "middle";
+    const remarkLineHeight = 30;
+    const remarkStartY = tableTop + headerHeight + dataHeight / 2 - ((remarkLines.length - 1) * remarkLineHeight) / 2;
+    remarkLines.forEach((line, index) => context.fillText(line, remarkCellX + colWidths[2] / 2, remarkStartY + index * remarkLineHeight));
+    context.restore();
+    context.textAlign = "left"; context.fillStyle = "#fff";
+    context.font = "900 19px Segoe UI, Arial";
+    context.fillText("AQI LEGEND", 88, 754);
+    aqiCategories.forEach((entry, index) => {
+      const x = 98 + (index % 2) * 470;
+      const y = 794 + Math.floor(index / 2) * 39;
+      context.fillStyle = previewCategoryColor(entry);
+      context.beginPath(); context.arc(x + 9, y - 7, 9, 0, Math.PI * 2); context.fill();
+      context.fillStyle = "#FFFFFF"; context.font = "700 15px Segoe UI, Arial";
+      context.fillText(`${entry.name.toUpperCase()} (${entry.range.replace("1–50", "0–50")})`, x + 27, y);
+    });
+    context.fillStyle = "#fff"; context.fillRect(70, 911, 940, 415);
+    context.fillStyle = "#17324d"; context.textAlign = "center";
+    context.font = "900 25px Segoe UI, Arial";
+    advisoryText(context, stationTitle, 540, 950, 860, 28);
+    context.font = "700 16px Segoe UI, Arial";
+    context.fillText(`${parameterTitle} AQI TREND`, 540, 977);
+    const left = 150, right = 936, top = 1016, bottom = 1236;
+    const max = graphMax;
+    const xFor = index => left + (points.length === 1 ? (right - left) / 2 : index * (right - left) / (points.length - 1));
+    const yFor = value => bottom - value / max * (bottom - top);
+    context.textAlign = "left"; context.font = "700 15px Segoe UI, Arial";
+    const tickValues = [];
+    for (let value = 0; value <= max; value += 50) tickValues.push(value);
+    if (tickValues.at(-1) !== max) tickValues.push(max);
+    tickValues.forEach(value => {
+      const y = yFor(value);
+      context.strokeStyle = "#dceaf3"; context.lineWidth = 1;
+      context.beginPath(); context.moveTo(left, y); context.lineTo(right, y); context.stroke();
+      context.fillStyle = "#60778b"; context.fillText(String(value), 108, y + 5);
+    });
+    if (max >= 100) {
+      context.strokeStyle = "#FF0000"; context.lineWidth = 3;
+      context.beginPath(); context.moveTo(left, yFor(100)); context.lineTo(right, yFor(100)); context.stroke();
+    }
+    context.save();
+    context.beginPath(); context.rect(left, top, right - left, bottom - top); context.clip();
+    context.strokeStyle = "#087cc1"; context.lineWidth = 3;
+    context.beginPath();
+    points.forEach((item, index) => index ? context.lineTo(xFor(index), yFor(item[parameter])) : context.moveTo(xFor(index), yFor(item[parameter])));
+    context.stroke();
+    context.fillStyle = "#087cc1";
+    points.forEach((item, index) => { context.beginPath(); context.arc(xFor(index), yFor(item[parameter]), 6, 0, Math.PI * 2); context.fill(); });
+    context.restore();
+    context.fillStyle = "#17324d"; context.font = "700 14px Segoe UI, Arial"; context.textAlign = "center";
+    points.forEach((item, index) => {
+      if (points.length <= 24 || index % Math.max(1, Math.ceil(points.length / 6)) === 0 || index === points.length - 1) {
+        const date = new Date(item.timestamp);
+        const hours = date.getHours(), minutes = date.getMinutes();
+        const hour = hours % 12 || 12;
+        const suffix = hours < 12 ? "am" : "pm";
+        const timeSuffix = minutes === 0 && hours === 0 ? "mn" : minutes === 0 && hours === 12 ? "nn" : suffix;
+        const tickLabel = points.length <= 24
+          ? `${hour}${minutes ? `:${String(minutes).padStart(2, "0")}` : ""}${timeSuffix}`
+          : date.toLocaleDateString([], {month: "short", day: "numeric"});
+        context.save(); context.translate(xFor(index), 1264); context.rotate(-Math.PI / 4); context.fillText(tickLabel, 0, 0); context.restore();
+      }
+    });
+    context.font = "700 14px Segoe UI, Arial";
+    const firstLegendLabel = `${parameterTitle} AQI`;
+    const secondLegendLabel = `${parameterTitle} AQI SAFE LIMIT (100 AQI)`;
+    const legendGap = 40, legendItemWidth = 26 + 9;
+    const legendWidth = legendItemWidth + context.measureText(firstLegendLabel).width + legendGap + legendItemWidth + context.measureText(secondLegendLabel).width;
+    let legendX = 540 - legendWidth / 2;
+    context.textAlign = "left";
+    context.fillStyle = "#087cc1"; context.fillRect(legendX, 1296, 26, 5);
+    context.fillStyle = "#17324d"; context.fillText(firstLegendLabel, legendX + 35, 1301);
+    legendX += legendItemWidth + context.measureText(firstLegendLabel).width + legendGap;
+    context.fillStyle = "#FF0000"; context.fillRect(legendX, 1296, 26, 5);
+    context.fillStyle = "#17324d"; context.fillText(secondLegendLabel, legendX + 35, 1301);
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  SLIDESHOW                                                           *
+   * ------------------------------------------------------------------ */
+  const visibleCanvas = document.getElementById("advisory-canvas");
+  const offscreen = {};     // advisory id -> rendered offscreen canvas (kept in memory only)
+  const signatures = {};
+  let currentIndex = 0;
+  let autoTimer = null;
+  let fadeTimer = null;
+
+  async function renderAll() {
+    const loadedImages = {
+      background: await assets.background,
+      denrLogo: await assets.denrLogo,
+      bagongLogo: await assets.bagongLogo
+    };
+    let changedCurrent = false;
+    for (const advisory of ADVISORIES) {
+      const {points, latest} = selectPoints(advisory.station, advisory.parameter);
+      if (!points.length || !latest) continue;
+      const signature = `${points.length}|${latest.timestamp}|${latest[advisory.parameter]}|${points[0].timestamp}`;
+      if (signature === signatures[advisory.id]) continue;
+      signatures[advisory.id] = signature;
+      let canvas = offscreen[advisory.id];
+      if (!canvas) { canvas = document.createElement("canvas"); offscreen[advisory.id] = canvas; }
+      const category = categoryForValue(latest[advisory.parameter]);
+      drawPosterInto(canvas, points, latest, advisory.parameter, category, filterLabel(points), advisory.station, graphMaximum(points, advisory.parameter), loadedImages);
+      if (advisory.id === ADVISORIES[currentIndex].id) changedCurrent = true;
+    }
+    if (changedCurrent) applySlide();
+  }
+
+  function applySlide() {
+    const source = offscreen[ADVISORIES[currentIndex].id];
+    if (!source) return;
+    const context = visibleCanvas.getContext("2d");
+    visibleCanvas.width = 1080; visibleCanvas.height = 1350;
+    context.clearRect(0, 0, visibleCanvas.width, visibleCanvas.height);
+    context.drawImage(source, 0, 0);
+  }
+
+  function showSlide(index, {animate = true} = {}) {
+    const total = ADVISORIES.length;
+    currentIndex = ((index % total) + total) % total;
+    if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
+    if (!animate || !offscreen[ADVISORIES[currentIndex].id]) { applySlide(); return; }
+    visibleCanvas.style.opacity = "0";
+    fadeTimer = setTimeout(() => {
+      applySlide();
+      visibleCanvas.style.opacity = "1";
+      fadeTimer = null;
+    }, 350);
+  }
+
+  function startAuto() {
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = setInterval(() => showSlide(currentIndex + 1), SLIDESHOW_INTERVAL);
+  }
+
+  // Arrow buttons: change the advisory selection and restart the screensaver timer.
+  document.getElementById("prev").addEventListener("click", () => { showSlide(currentIndex - 1); startAuto(); });
+  document.getElementById("next").addEventListener("click", () => { showSlide(currentIndex + 1); startAuto(); });
+
+  // Keyboard arrows also work.
+  document.addEventListener("keydown", event => {
+    if (event.key === "ArrowLeft") { showSlide(currentIndex - 1); startAuto(); }
+    else if (event.key === "ArrowRight") { showSlide(currentIndex + 1); startAuto(); }
+  });
+
+  refreshLiveData().then(() => showSlide(0, {animate: false}));
+  setInterval(refreshLiveData, DATA_REFRESH_INTERVAL);
+  startAuto();
+  const interBubble = document.querySelector('.interactive');
+  if (interBubble) {
+    let curX = 0;
+    let curY = 0;
+    let tgX = 0;
+    let tgY = 0;
+    function move() {
+      curX += (tgX - curX) / 20;
+      curY += (tgY - curY) / 20;
+      interBubble.style.transform = `translate(${Math.round(curX)}px, ${Math.round(curY)}px)`;
+      requestAnimationFrame(move);
+    }
+    window.addEventListener('mousemove', (event) => {
+      tgX = event.clientX;
+      tgY = event.clientY;
+    });
+    move();
+  }
+})();
+</script>
+</body>
+</html>
